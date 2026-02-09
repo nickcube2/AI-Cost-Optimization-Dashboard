@@ -39,6 +39,7 @@ AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
 CLAUDE_API_KEY = os.getenv('CLAUDE_API_KEY')
 SLACK_WEBHOOK_URL = os.getenv('SLACK_WEBHOOK_URL')
 DAYS_TO_ANALYZE = int(os.getenv('DAYS_TO_ANALYZE', '7'))
+DRY_RUN = os.getenv('DRY_RUN', 'false').lower() == 'true'
 
 # ============================================================================
 # FUNCTION: Print Cost Chart
@@ -256,6 +257,44 @@ def analyze_costs_with_ai(cost_data):
     # Step 1: Check if we have an API key
     if not CLAUDE_API_KEY:
         return "⚠️ Claude API key not found. Please add it to your .env file."
+    
+    # DRY RUN MODE - Skip API call for testing
+    if DRY_RUN:
+        print("   ⚠️  DRY RUN MODE - Using mock AI response (no API charges)")
+        return """## 📊 SPENDING OVERVIEW
+**Total Monthly Spend**: $6.62 (extremely low - development/testing environment)
+**Trend**: Stable minimal spend suggesting consistent light workload
+**Top 3 Cost Drivers**:
+1. Amazon EKS: $3.54 (53.5%) - Control plane costs
+2. AWS KMS: $1.82 (27.5%) - Key usage charges  
+3. EC2 Other: $0.69 (10.4%) - Likely EBS volumes/snapshots
+
+**Anomalies**: Unusually high KMS costs (27.5%) relative to compute usage
+
+## 💰 OPTIMIZATION OPPORTUNITIES
+
+### 1. **KMS Key Usage Optimization**
+- **What**: AWS KMS API calls and key usage patterns
+- **Why**: $1.82/month (27.5% of total) is disproportionate for low compute
+- **Action**: Audit CloudTrail logs, consolidate keys, implement caching
+- **Savings**: $1.00-1.50/month (55-82% reduction)
+- **Risk**: Low (optimization only)
+- **Effort**: Medium (1-4 hours)
+
+### 2. **EKS Cluster Right-sizing**
+- **What**: Amazon EKS control plane running 24/7
+- **Why**: $3.54/month for minimal workload
+- **Action**: Consider EKS Fargate profiles or migrate to ECS
+- **Savings**: $2.50-3.00/month (70-85% reduction)
+- **Risk**: High (architecture change)
+- **Effort**: Complex (> 4 hours)
+
+**ROI RANKING**:
+1. KMS Optimization (High impact, Low risk, Medium effort)
+2. EKS Architecture Review (Highest savings, High complexity)
+
+**Note**: This is a DRY RUN mock response. Set DRY_RUN=false in .env for real AI analysis.
+"""
     
     # Step 2: Create Anthropic client
     client = Anthropic(api_key=CLAUDE_API_KEY)
@@ -480,9 +519,29 @@ def main():
         print("   - IAM user has ce:GetCostAndUsage permission")
         return
     
-    if cost_data['total_cost'] == 0:
-        print("\n⚠️  No cost data found for this period.")
-        return
+    # Handle very low costs (likely free tier or testing)
+    if cost_data['total_cost'] < 1.0:
+        print("\n" + "=" * 70)
+        print("ℹ️  LOW COST DETECTED")
+        print("=" * 70)
+        print(f"\nTotal costs are ${cost_data['total_cost']:.2f} for {cost_data['period_days']} days.")
+        print("\nThis could indicate:")
+        print("  ✓ Free Tier usage (great for learning!)")
+        print("  ✓ Development/testing environment (expected)")
+        print("  ✓ New AWS account (Cost Explorer needs 24hrs to populate)")
+        print("\nThe AI analysis will still provide insights based on available data.")
+        print("For production-scale recommendations, try analyzing a larger environment.")
+        print("=" * 70 + "\n")
+        
+        # Ask user if they want to continue
+        try:
+            response = input("Continue with analysis? (y/n): ").lower()
+            if response != 'y':
+                print("\n👋 Analysis cancelled. Run again when you have more data!\n")
+                return
+        except KeyboardInterrupt:
+            print("\n\n👋 Analysis cancelled.\n")
+            return
     
     # Step 2: Analyze costs with AI
     ai_analysis = analyze_costs_with_ai(cost_data)
