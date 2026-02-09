@@ -1,0 +1,112 @@
+======================================================================
+AWS COST OPTIMIZATION REPORT
+======================================================================
+
+Generated: 2026-02-08 21:19:30
+Period: 2025-11-10 to 2026-02-08
+Total Cost: $19.23
+
+----------------------------------------------------------------------
+COST BREAKDOWN BY SERVICE
+----------------------------------------------------------------------
+
+Amazon Elastic Container Service for Kubernetes: $7.55
+EC2 - Other: $3.67
+Amazon Elastic Compute Cloud - Compute: $2.93
+Tax: $2.48
+AWS Key Management Service: $1.83
+Amazon Virtual Private Cloud: $0.69
+Amazon Elastic Load Balancing: $0.05
+Amazon Elastic Container Service: $0.02
+AmazonCloudWatch: $0.02
+Amazon Simple Storage Service: $0.00
+Amazon EC2 Container Registry (ECR): $0.00
+Amazon DynamoDB: $0.00
+AWS Secrets Manager: $0.00
+AWS Glue: $0.00
+AWS CloudFormation: $0.00
+Amazon Location Service: $0.00
+Amazon Simple Notification Service: $0.00
+Amazon Simple Queue Service: $0.00
+AWS CloudShell: $0.00
+
+----------------------------------------------------------------------
+AI ANALYSIS & RECOMMENDATIONS
+----------------------------------------------------------------------
+
+# AWS Cost Optimization Analysis
+
+## Key Insights About Spending Patterns
+
+- **Low overall spend**: $19.23 over 90 days (~$6.41/month) indicates a development or testing environment
+- **Container-heavy workload**: EKS dominates spending at 39.3% ($7.55), suggesting Kubernetes-based applications
+- **Compute costs are distributed**: Split between EKS ($7.55), EC2 compute ($2.93), and EC2-Other ($3.67)
+- **High KMS usage**: $1.83 (9.5%) is disproportionately high for encryption keys in a small environment
+- **Minimal storage costs**: S3 showing $0.00 suggests very light data storage usage
+- **Tax burden**: $2.48 represents 12.9% of total costs
+
+## Top Cost-Saving Recommendations
+
+### 1. Optimize KMS Key Usage
+**Priority: HIGH**
+- **Issue**: $1.83/90 days ($0.61/month) for KMS is excessive for a small environment
+- **Action**: 
+  - Audit active customer-managed keys (CMKs) - each costs $1/month
+  - Delete unused keys or schedule for deletion
+  - Consider using AWS-managed keys where possible
+- **Estimated Monthly Savings**: $0.40-$0.50 (65-80% reduction)
+
+### 2. Right-size EKS Cluster
+**Priority: HIGH** 
+- **Issue**: $7.55 for EKS over 90 days suggests potential over-provisioning
+- **Action**:
+  - Review EKS node group instance types and scaling policies
+  - Implement cluster autoscaler if not already present
+  - Consider Fargate for sporadic workloads vs EC2 nodes
+  - Use Spot instances for non-critical workloads (up to 90% savings)
+- **Estimated Monthly Savings**: $0.50-$1.00
+
+### 3. Analyze EC2 Instance Utilization
+**Priority: MEDIUM**
+- **Issue**: $6.60 total EC2 costs (compute + other) may include underutilized instances
+- **Action**:
+  - Use CloudWatch metrics to identify low-utilization instances
+  - Implement auto-scaling for variable workloads
+  - Schedule dev/test instances to run only during business hours
+  - Consider smaller instance types for development workloads
+- **Estimated Monthly Savings**: $0.30-$0.60
+
+### 4. Optimize Load Balancer Usage
+**Priority: LOW**
+- **Issue**: $0.05 for ELB suggests minimal usage but potential inefficiency
+- **Action**:
+  - Evaluate if Application Load Balancer is necessary for current traffic
+  - Consider using EKS ingress controller instead of separate ALB
+  - Consolidate multiple load balancers if present
+- **Estimated Monthly Savings**: $0.02-$0.05
+
+### 5. Review VPC Costs
+**Priority: LOW**
+- **Issue**: $0.69 for VPC costs may indicate NAT Gateway usage
+- **Action**:
+  - Audit NAT Gateway necessity for development environment
+  - Consider NAT instance for lower-traffic scenarios
+  - Review data transfer patterns and optimize
+- **Estimated Monthly Savings**: $0.10-$0.20
+
+## Summary
+
+**Total Estimated Monthly Savings**: $1.32-$2.35 (62-110% of current monthly spend)
+
+**Immediate Actions** (High Priority):
+1. Audit and cleanup KMS keys
+2. Review EKS node sizing and implement spot instances
+
+**Quick Wins**:
+- The small scale of this environment makes it ideal for aggressive optimization
+- Focus on the top 3 services (EKS, EC2, KMS) which represent 73.6% of costs
+- Consider if this is a development environment that could be shut down outside business hours
+
+**Note**: Given the low absolute costs, balance optimization effort with potential savings. Focus on high-impact, low-effort changes first.
+
+======================================================================

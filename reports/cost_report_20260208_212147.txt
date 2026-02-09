@@ -1,0 +1,89 @@
+======================================================================
+AWS COST OPTIMIZATION REPORT
+======================================================================
+
+Generated: 2026-02-08 21:21:47
+Period: 2025-11-10 to 2026-02-08
+Total Cost: $19.23
+
+----------------------------------------------------------------------
+COST BREAKDOWN BY SERVICE
+----------------------------------------------------------------------
+
+Amazon Elastic Container Service for Kubernetes: $7.55
+EC2 - Other: $3.67
+Amazon Elastic Compute Cloud - Compute: $2.93
+Tax: $2.48
+AWS Key Management Service: $1.83
+Amazon Virtual Private Cloud: $0.69
+Amazon Elastic Load Balancing: $0.05
+Amazon Elastic Container Service: $0.02
+AmazonCloudWatch: $0.02
+Amazon Simple Storage Service: $0.00
+Amazon EC2 Container Registry (ECR): $0.00
+Amazon DynamoDB: $0.00
+AWS Secrets Manager: $0.00
+AWS Glue: $0.00
+AWS CloudFormation: $0.00
+Amazon Location Service: $0.00
+Amazon Simple Notification Service: $0.00
+Amazon Simple Queue Service: $0.00
+AWS CloudShell: $0.00
+
+----------------------------------------------------------------------
+AI ANALYSIS & RECOMMENDATIONS
+----------------------------------------------------------------------
+
+## 📊 SPENDING OVERVIEW
+- **Total Spend**: $19.23 over 90 days (~$6.41/month) - relatively low baseline spend for a production environment
+- **Top 3 Cost Drivers**: 
+  1. Amazon EKS: $7.55 (39.3%) - Kubernetes cluster management
+  2. EC2 - Other: $3.67 (19.1%) - Likely EBS volumes, snapshots, or Elastic IPs
+  3. EC2 - Compute: $2.93 (15.2%) - Running instances
+- **Unusual Patterns**: High KMS costs ($1.83) relative to overall spend suggests excessive API calls or inefficient key usage. Tax represents 12.9% indicating potential for geographic optimization.
+
+## 💰 OPTIMIZATION OPPORTUNITIES
+
+### 1. KMS API Call Optimization
+- **What**: AWS Key Management Service excessive usage
+- **Why**: $1.83 (9.5% of total spend) is disproportionately high for a $19 environment, suggesting >18,000 API calls/month
+- **Action**: Review application code for unnecessary KMS calls, implement caching for data keys, use envelope encryption
+- **Savings**: $1.20/month (65% reduction)
+- **Risk**: Low (code optimization only)
+- **Effort**: Medium (1-4 hours)
+
+### 2. EKS Cluster Rightsizing
+- **What**: Amazon EKS cluster potentially oversized
+- **Why**: $7.55 for EKS suggests multiple worker nodes or over-provisioned capacity for low-traffic workload
+- **Action**: Review node group sizing via EKS console, consider switching to Fargate for variable workloads, or reduce node count
+- **Savings**: $2.50/month (33% reduction)
+- **Risk**: Medium (requires workload analysis)
+- **Effort**: Medium (1-4 hours)
+
+### 3. EC2 Storage Optimization
+- **What**: EC2 - Other costs ($3.67)
+- **Why**: Likely unattached EBS volumes, over-provisioned storage, or unnecessary snapshots
+- **Action**: Identify unattached volumes in EC2 console, delete old snapshots, resize volumes to actual usage
+- **Savings**: $1.50/month (40% reduction)
+- **Risk**: Low (after confirming detached resources)
+- **Effort**: Quick Win (< 1 hour)
+
+### 4. VPC NAT Gateway Review
+- **What**: VPC costs ($0.69) may include NAT Gateway
+- **Why**: For low-traffic environment, NAT Gateway ($45/month base) seems excessive if present
+- **Action**: Check if NAT Gateway exists, consider NAT Instance or VPC Endpoints for specific services
+- **Savings**: $0.35/month (50% reduction if optimizing data transfer)
+- **Risk**: Low (routing table updates)
+- **Effort**: Quick Win (< 1 hour)
+
+### 5. Geographic Cost Optimization
+- **What**: Tax burden ($2.48)
+- **Why**: 12.9% tax rate suggests deployment in high-tax region
+- **Action**: Evaluate moving non-latency-sensitive resources to lower-tax AWS regions
+- **Savings**: $1.00/month (tax reduction)
+- **Risk**: High (potential latency impact)
+- **Effort**: Complex (> 4 hours)
+
+**ROI Ranking**: #3 Storage → #4 VPC → #1 KMS → #2 EKS → #5 Geographic
+
+======================================================================

@@ -1,0 +1,81 @@
+======================================================================
+AWS COST OPTIMIZATION REPORT
+======================================================================
+
+Generated: 2026-02-08 21:22:44
+Period: 2026-01-09 to 2026-02-08
+Total Cost: $6.62
+
+----------------------------------------------------------------------
+COST BREAKDOWN BY SERVICE
+----------------------------------------------------------------------
+
+Amazon Elastic Container Service for Kubernetes: $3.54
+AWS Key Management Service: $1.82
+EC2 - Other: $0.69
+Amazon Elastic Compute Cloud - Compute: $0.41
+Tax: $0.13
+Amazon Virtual Private Cloud: $0.03
+Amazon Simple Storage Service: $0.00
+Amazon EC2 Container Registry (ECR): $0.00
+Amazon DynamoDB: $0.00
+AWS Secrets Manager: $0.00
+AWS Glue: $0.00
+AmazonCloudWatch: $0.00
+Amazon Simple Notification Service: $0.00
+Amazon Location Service: $0.00
+Amazon Simple Queue Service: $0.00
+
+----------------------------------------------------------------------
+AI ANALYSIS & RECOMMENDATIONS
+----------------------------------------------------------------------
+
+## 📊 SPENDING OVERVIEW
+- **Total Monthly Spend**: $6.62 with very low overall costs indicating a development/testing environment or minimal production workload
+- **Top 3 Cost Drivers**: 
+  1. Amazon EKS: $3.54 (53.5%) - Kubernetes control plane
+  2. AWS KMS: $1.82 (27.5%) - Key management operations
+  3. EC2 Other: $0.69 (10.4%) - Likely EBS volumes and snapshots
+- **Unusual Patterns**: KMS costs are disproportionately high (27.5%) for such a small environment, suggesting excessive key operations or unnecessary keys
+
+## 💰 OPTIMIZATION OPPORTUNITIES
+
+### 1. **KMS Key Optimization** 
+- **What**: AWS KMS key usage and operations
+- **Why**: $1.82/month KMS cost is excessive for a $6.62 total spend - likely from unused keys ($1/key/month) or excessive API calls
+- **Action**: Audit KMS keys via AWS Console → KMS → Customer managed keys, delete unused keys, consolidate where possible
+- **Savings**: $12-18/month (66-99% reduction)
+- **Risk**: Low (after confirming keys aren't in use)
+- **Effort**: Quick Win (< 1 hour)
+
+### 2. **EKS Cluster Evaluation**
+- **What**: Amazon EKS control plane cost
+- **Why**: $3.54/month suggests running EKS cluster ($0.10/hour = $72/month prorated) - may be overkill for this workload size
+- **Action**: Consider migrating to ECS Fargate or EC2 if Kubernetes features aren't essential
+- **Savings**: $50-70/month (migrating to ECS eliminates control plane costs)
+- **Risk**: High (requires application migration)
+- **Effort**: Complex (> 4 hours)
+
+### 3. **EBS Volume Rightsizing**
+- **What**: EC2 storage volumes contributing to $0.69 "EC2 Other" costs
+- **Why**: Likely provisioned storage sitting idle or oversized for actual usage
+- **Action**: Use AWS Cost Explorer → EC2 rightsizing recommendations, resize or delete unused EBS volumes/snapshots
+- **Savings**: $3-8/month (50-80% of EC2 Other costs)
+- **Risk**: Low (after confirming no critical data)
+- **Effort**: Quick Win (< 1 hour)
+
+### 4. **EC2 Instance Optimization**
+- **What**: $0.41 in EC2 compute costs
+- **Why**: Small compute spend suggests potentially oversized instances for actual workload
+- **Action**: Review CloudWatch metrics for CPU/memory utilization, downsize to smaller instance types (t3.nano/micro)
+- **Savings**: $2-5/month (50-75% reduction)
+- **Risk**: Medium (performance impact possible)
+- **Effort**: Medium (1-4 hours including monitoring)
+
+**ROI Ranking**: 
+1. KMS Optimization (Highest ROI - $12-18 savings / <1hr effort)
+2. EBS Volume Rightsizing (High ROI - $3-8 savings / <1hr effort)  
+3. EC2 Instance Optimization (Medium ROI - monitoring required)
+4. EKS Migration (Low ROI due to complexity vs. absolute savings)
+
+======================================================================
