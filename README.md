@@ -189,8 +189,8 @@ MIT License - See [LICENSE](LICENSE) file
 **Nicholas Awuni**  
 DevOps Engineer | AWS + AI Automation Specialist
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- GitHub: (https://github.com/nickcube2)
+- LinkedIn: (https://linkedin.com/in/nicholas-awuni-6018041b1/)
 - Portfolio: [Your website]
 
 ---
