@@ -26,24 +26,29 @@ This tool automatically:
 ### Sample Output
 
 ```
-🤖 Weekly AWS Cost Analysis - February 7, 2025
+Cloud Spend Intelligence (Demo Snapshot)
+Period: 2026-01-17 to 2026-02-16
 
-📈 Total Spend: $8,234 (↑ 12% vs last week)
+Total Spend: $12,858.00
+Forecast (30 days): $9,896.93 (Confidence: Medium)
+Budget Status: On Track (Buffer: $4,246.87, 30%)
+ROI: $4,800.00/year (Implemented: 33.3%)
+Anomalies: None detected
 
-🚨 Top Recommendations:
-1. EC2 i3.2xlarge instance running 24/7 with 8% CPU → Switch to t3.large
-   💰 Potential savings: $320/month
+Top Recommendations:
+1. Add S3 lifecycle policy to enable Intelligent-Tiering (prod)
+   Estimated savings: $120.00/month
 
-2. Unused RDS snapshot from 2023 → Delete aged backup
-   💰 Potential savings: $45/month
+2. Consolidate NAT gateways across AZs (staging/dev)
+   Estimated savings: $95.00/month
 
-3. S3 bucket with 450GB in Standard class → Move to Intelligent-Tiering
-   💰 Potential savings: $67/month
-
-📊 Spending by Service:
-- EC2: $4,200 (51%)
-- RDS: $2,100 (25%)
-- S3: $890 (11%)
+Top Services (combined):
+- EC2: $1,146.15
+- RDS: $518.25
+- S3: $264.05
+- AWS Lambda: $134.60
+- NAT Gateway: $90.85
+- AWS KMS: $33.10
 ```
 
 ### Dashboard Preview
