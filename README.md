@@ -113,6 +113,27 @@ Open `http://localhost:5000` in your browser.
 DASHBOARD_MODE=live python app.py
 ```
 
+### Real-Time Updates (SSE)
+
+The dashboard can stream updates using Server-Sent Events.
+
+```bash
+# Default: refresh every 30 seconds
+SSE_INTERVAL=30 python app.py
+```
+
+### Bank-Friendly AWS Integration (Governed & Auditable)
+
+For regulated environments, prefer a **batch + governance** approach:
+
+1. **Source of truth**: Enable AWS **Cost & Usage Report (CUR)** to S3
+2. **Analytics**: Query with **Athena** (auditable SQL)
+3. **Schedule**: Run daily/hourly refresh with **EventBridge → Lambda**
+4. **Storage**: Store normalized results in **S3 or RDS** for the dashboard
+5. **Security**: Use IAM roles, KMS encryption, and VPC endpoints
+
+This yields deterministic, compliant reporting while still supporting near-real-time dashboards.
+
 ### Demo Mode (No AWS Credentials Required)
 
 ```bash

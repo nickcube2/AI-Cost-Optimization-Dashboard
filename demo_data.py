@@ -113,6 +113,8 @@ def get_demo_recommendations():
             "description": "CPU < 15% over 30 days; safe resize during maintenance window",
             "risk": "low",
             "effort": "quick_win",
+            "implemented": True,
+            "actual_savings": 400.0,
         },
         {
             "title": "Add S3 lifecycle policy to enable Intelligent-Tiering (prod)",

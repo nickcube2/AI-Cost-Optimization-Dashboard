@@ -54,6 +54,8 @@ def build_dashboard_payload(
 
     # Forecast + budget
     forecaster = CostForecaster(provider=os.getenv("LLM_PROVIDER", "openai"))
+    if mode == "demo" and monthly_budget < multi_account_data.get("total_all_accounts", 0.0):
+        monthly_budget = round(multi_account_data.get("total_all_accounts", 0.0) * 1.1, 2)
     forecast = forecaster.simple_forecast(account_data, forecast_days=30)
     budget = forecaster.budget_alert(account_data, monthly_budget)
 
@@ -67,7 +69,7 @@ def build_dashboard_payload(
             os.remove(db_path)
         tracker = SavingsTracker(db_path=db_path)
         for rec in get_demo_recommendations():
-            tracker.add_recommendation(
+            rec_id = tracker.add_recommendation(
                 title=rec["title"],
                 recommendation_type=rec["type"],
                 estimated_savings=rec["savings"],
@@ -76,6 +78,12 @@ def build_dashboard_payload(
                 effort=rec["effort"],
                 account_name="demo",
             )
+            if rec.get("implemented"):
+                tracker.mark_implemented(
+                    rec_id,
+                    actual_savings=rec.get("actual_savings"),
+                    notes="Implemented in demo environment",
+                )
     else:
         tracker = SavingsTracker(db_path="data/savings_tracker.db")
 

@@ -3,12 +3,15 @@ const formatMoney = (value) => {
   return `$${Number(value).toFixed(2)}`;
 };
 
-const loadDashboard = async () => {
-  const response = await fetch("/api/summary");
-  const data = await response.json();
+let trendChart = null;
+let serviceChart = null;
+let sseSource = null;
+let liveEnabled = true;
 
+const updateDashboard = (data) => {
   document.getElementById("mode-pill").textContent = `Mode: ${data.meta.mode}`;
   document.getElementById("date-pill").textContent = `Period: ${data.meta.start_date} → ${data.meta.end_date}`;
+  document.getElementById("updated-pill").textContent = `Last update: ${new Date().toLocaleTimeString()}`;
   document.getElementById("total-spend").textContent = formatMoney(data.totals.total_spend);
   document.getElementById("accounts-count").textContent = `${data.totals.accounts} accounts analyzed`;
 
@@ -46,7 +49,14 @@ const renderTrendChart = (dailyCosts) => {
   const labels = dailyCosts.map((d) => d.date);
   const values = dailyCosts.map((d) => d.cost);
 
-  new Chart(ctx, {
+  if (trendChart) {
+    trendChart.data.labels = labels;
+    trendChart.data.datasets[0].data = values;
+    trendChart.update();
+    return;
+  }
+
+  trendChart = new Chart(ctx, {
     type: "line",
     data: {
       labels,
@@ -77,7 +87,14 @@ const renderServiceChart = (services) => {
   const labels = topEntries.map((item) => item[0].replace("Amazon ", ""));
   const values = topEntries.map((item) => item[1]);
 
-  new Chart(ctx, {
+  if (serviceChart) {
+    serviceChart.data.labels = labels;
+    serviceChart.data.datasets[0].data = values;
+    serviceChart.update();
+    return;
+  }
+
+  serviceChart = new Chart(ctx, {
     type: "bar",
     data: {
       labels,
@@ -168,4 +185,43 @@ document.getElementById("export-btn").addEventListener("click", () => {
   window.print();
 });
 
+const loadDashboard = async () => {
+  const response = await fetch("/api/summary");
+  const data = await response.json();
+  updateDashboard(data);
+};
+
+const startSSE = () => {
+  if (!liveEnabled) return;
+  sseSource = new EventSource("/api/stream");
+  sseSource.addEventListener("summary", (event) => {
+    const payload = JSON.parse(event.data);
+    updateDashboard(payload);
+  });
+  sseSource.onerror = () => {
+    if (sseSource) sseSource.close();
+    if (liveEnabled) setTimeout(startSSE, 5000);
+  };
+};
+
+const stopSSE = () => {
+  if (sseSource) sseSource.close();
+  sseSource = null;
+};
+
+const toggleButton = document.getElementById("toggle-live");
+toggleButton.addEventListener("click", () => {
+  liveEnabled = !liveEnabled;
+  if (liveEnabled) {
+    toggleButton.textContent = "Pause";
+    toggleButton.classList.remove("paused");
+    startSSE();
+  } else {
+    toggleButton.textContent = "Resume";
+    toggleButton.classList.add("paused");
+    stopSSE();
+  }
+});
+
 loadDashboard();
+startSSE();
