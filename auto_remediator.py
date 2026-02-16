@@ -264,11 +264,13 @@ Output ONLY valid Terraform HCL code, no explanations before or after.
         
         for rec in recommendations:
             # Only auto-remediate low-risk items
-            if rec.get('risk', '').lower() != 'low':
+            risk_value = rec.get('risk', rec.get('risk_level', ''))
+            if risk_value.lower() != 'low':
                 continue
             
             # Only quick wins
-            if rec.get('effort', '').lower() not in ['quick_win', 'quick win', '<1 hour']:
+            effort_value = rec.get('effort', rec.get('effort_level', ''))
+            if effort_value.lower() not in ['quick_win', 'quick win', '<1 hour']:
                 continue
             
             # Map recommendation to remediation

@@ -90,6 +90,28 @@ python cost_optimizer.py
 0 9 * * 1 /usr/bin/python3 /path/to/cost_optimizer.py
 ```
 
+### Demo Mode (No AWS Credentials Required)
+
+```bash
+# Full advanced demo with sample data + report output
+python advanced_optimizer.py --demo
+```
+
+```bash
+# Live run + report output
+python advanced_optimizer.py --report
+```
+
+### Advanced Flags
+
+```bash
+# Add AI-powered forecast (requires Claude API key)
+python advanced_optimizer.py --report --ai-forecast
+
+# Generate auto-remediation plan (dry-run) + Terraform stubs
+python advanced_optimizer.py --auto-remediate --generate-terraform
+```
+
 ## 🏗️ Architecture
 
 ```
