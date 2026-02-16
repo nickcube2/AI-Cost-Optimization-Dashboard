@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Cost Optimization Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">AI Cost Optimization</p>
+          <h1>Cloud Spend Intelligence</h1>
+          <p class="subhead">
+            Unified view of spend, anomalies, savings impact, and auto-remediation readiness.
+          </p>
+          <div class="actions">
+            <button class="btn" id="export-btn">Export PDF</button>
+          </div>
+        </div>
+        <div class="hero-meta">
+          <div class="pill" id="mode-pill">Mode: Demo</div>
+          <div class="pill" id="date-pill">Period: --</div>
+        </div>
+      </header>
+
+      <section class="grid stats">
+        <div class="card">
+          <h3>Total Spend</h3>
+          <p class="stat" id="total-spend">$0</p>
+          <p class="muted" id="accounts-count">0 accounts</p>
+        </div>
+        <div class="card">
+          <h3>Forecast (30 days)</h3>
+          <p class="stat" id="forecast-total">$0</p>
+          <p class="muted" id="forecast-confidence">Confidence: --</p>
+        </div>
+        <div class="card">
+          <h3>Budget Status</h3>
+          <p class="stat" id="budget-status">--</p>
+          <p class="muted" id="budget-detail">--</p>
+        </div>
+        <div class="card">
+          <h3>ROI</h3>
+          <p class="stat" id="roi-annual">$0/yr</p>
+          <p class="muted" id="roi-impl">Implemented: 0%</p>
+        </div>
+      </section>
+
+      <section class="grid charts">
+        <div class="card">
+          <h3>Daily Spend Trend</h3>
+          <canvas id="trendChart"></canvas>
+        </div>
+        <div class="card">
+          <h3>Top Services</h3>
+          <canvas id="serviceChart"></canvas>
+        </div>
+      </section>
+
+      <section class="grid split">
+        <div class="card">
+          <h3>Anomalies</h3>
+          <div id="anomaly-list" class="list"></div>
+        </div>
+        <div class="card">
+          <h3>Top Recommendations</h3>
+          <div id="rec-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="card">
+          <h3>Auto-Remediation Preview</h3>
+          <div id="remediation-list" class="list"></div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>Built for mentorship demo • Automated weekly reporting ready</span>
+      </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

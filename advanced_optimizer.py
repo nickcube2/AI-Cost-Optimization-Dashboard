@@ -164,7 +164,7 @@ def main():
 
     # Configuration
     aws_accounts = os.getenv('AWS_ACCOUNTS', 'default:default')
-    claude_api_key = os.getenv('CLAUDE_API_KEY')
+    llm_provider = os.getenv('LLM_PROVIDER', 'openai')
     days_to_analyze = int(os.getenv('DAYS_TO_ANALYZE', '7'))
     monthly_budget = float(os.getenv('MONTHLY_BUDGET', '1000'))
     
@@ -206,7 +206,7 @@ def main():
     print("STEP 2: COST FORECASTING")
     print("=" * 70)
     
-    forecaster = CostForecaster(claude_api_key)
+    forecaster = CostForecaster(provider=llm_provider)
     
     forecast = None
     budget_check = None
@@ -225,7 +225,7 @@ def main():
         print_budget_alert(budget_check)
         
         # AI-powered forecast (if enabled)
-        if args["ai_forecast"] and claude_api_key:
+        if args["ai_forecast"]:
             print("\n" + "=" * 70)
             print("🤖 AI-POWERED DETAILED FORECAST")
             print("=" * 70 + "\n")
@@ -302,7 +302,7 @@ def main():
         print("STEP 4: AUTO-REMEDIATION")
         print("=" * 70)
         
-        remediator = AutoRemediator(claude_api_key, dry_run=True)
+        remediator = AutoRemediator(provider=llm_provider, dry_run=True)
         
         # Create remediation plan from pending recommendations
         plan = remediator.create_remediation_plan(pending)

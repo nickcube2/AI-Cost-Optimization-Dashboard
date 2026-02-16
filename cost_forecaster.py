@@ -8,25 +8,21 @@ Uses Claude AI to predict future AWS costs based on historical trends.
 Author: Nicholas Awuni
 """
 
-import os
 from datetime import datetime, timedelta
 from typing import Dict, List
 import json
-from anthropic import Anthropic
+from llm_client import LLMClient
 
 class CostForecaster:
     """
     Predicts future AWS costs using AI analysis of historical trends.
     """
     
-    def __init__(self, claude_api_key: str):
+    def __init__(self, provider: str = None):
         """
-        Initialize forecaster with Claude API.
-        
-        Args:
-            claude_api_key: Anthropic API key
+        Initialize forecaster with provider-agnostic LLM.
         """
-        self.client = Anthropic(api_key=claude_api_key) if claude_api_key else None
+        self.llm = LLMClient(provider=provider)
     
     def analyze_trend(self, daily_costs: List[Dict]) -> Dict:
         """
@@ -96,8 +92,8 @@ class CostForecaster:
         Returns:
             AI-generated forecast analysis
         """
-        if not self.client:
-            return "⚠️ Claude API key not configured. Cannot generate AI forecast."
+        if not self.llm.is_configured():
+            return "⚠️ LLM provider not configured. Cannot generate AI forecast."
         
         # Analyze historical trend
         if 'daily_costs' not in cost_data:
@@ -156,18 +152,11 @@ Format clearly with headers and bullet points.
         try:
             print("🔮 Generating AI-powered forecast...")
             
-            message = self.client.messages.create(
-                model="claude-sonnet-4-20250514",
+            forecast = self.llm.generate_text(
+                prompt=prompt,
+                system="You are a FinOps forecasting expert.",
                 max_tokens=1500,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ]
             )
-            
-            forecast = message.content[0].text
             
             print("   ✅ Forecast generated")
             
@@ -386,8 +375,7 @@ if __name__ == "__main__":
     }
     
     # Initialize forecaster
-    claude_key = os.getenv('CLAUDE_API_KEY')
-    forecaster = CostForecaster(claude_key)
+    forecaster = CostForecaster()
     
     # Generate simple forecast
     forecast = forecaster.simple_forecast(mock_data, forecast_days=30)
@@ -398,7 +386,7 @@ if __name__ == "__main__":
     print_budget_alert(budget_check)
     
     # AI forecast (if API key available)
-    if claude_key and '--ai' in sys.argv:
+    if '--ai' in sys.argv:
         ai_forecast = forecaster.forecast_with_ai(mock_data, forecast_days=30)
         print("\n" + "=" * 70)
         print("🤖 AI-POWERED FORECAST")

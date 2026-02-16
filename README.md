@@ -1,10 +1,11 @@
 # 🤖 AI Cost Optimization Dashboard
 
-**Automated weekly AWS cost analysis with actionable AI recommendations delivered to Slack**
+**Automated cloud cost analysis with AI recommendations, anomaly detection, and a web dashboard**
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
 [![AWS](https://img.shields.io/badge/AWS-Cost%20Explorer-orange.svg)](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/)
-[![Claude AI](https://img.shields.io/badge/Claude-AI%20Powered-blueviolet.svg)](https://www.anthropic.com/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-API%20Powered-black.svg)](https://openai.com/)
+[![Claude](https://img.shields.io/badge/Claude-Optional-blueviolet.svg)](https://www.anthropic.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ## 🎯 Business Impact
@@ -16,10 +17,11 @@
 ## 📊 What It Does
 
 This tool automatically:
-1. **Analyzes** your AWS spending patterns using Cost Explorer API
-2. **Identifies** cost-saving opportunities using Claude AI
-3. **Delivers** weekly recommendations to your Slack channel
-4. **Tracks** savings implementation progress
+1. **Analyzes** AWS spending patterns using Cost Explorer API
+2. **Identifies** cost-saving opportunities using a cloud-agnostic LLM
+3. **Detects** spending anomalies and trend shifts
+4. **Tracks** savings implementation and ROI
+5. **Visualizes** everything in a web dashboard
 
 ### Sample Output
 
@@ -52,7 +54,7 @@ This tool automatically:
 # Required
 - Python 3.11 or 3.12 (NOT 3.14 - compatibility issues)
 - AWS Account with Cost Explorer enabled
-- Claude API key
+- OpenAI API key (default) or Claude API key
 - Slack workspace (optional for notifications)
 ```
 
@@ -76,8 +78,15 @@ cp .env.example .env
 ```bash
 # .env file
 AWS_REGION=us-east-1
+LLM_PROVIDER=openai   # openai | anthropic | mock
+OPENAI_API_KEY=sk-your-openai-key-here
+OPENAI_MODEL=gpt-4.1-mini
+# OPENAI_BASE_URL=https://api.openai.com/v1/responses
 CLAUDE_API_KEY=sk-ant-your-key-here
+CLAUDE_MODEL=claude-sonnet-4-20250514
 SLACK_WEBHOOK_URL=https://hooks.slack.com/your-webhook
+MONTHLY_BUDGET=1000
+DASHBOARD_MODE=demo
 ```
 
 ### Run It
@@ -88,6 +97,20 @@ python cost_optimizer.py
 
 # Schedule weekly (using cron)
 0 9 * * 1 /usr/bin/python3 /path/to/cost_optimizer.py
+```
+
+### Web Dashboard (Flask + Chart.js)
+
+```bash
+# Local demo mode (no AWS creds)
+python app.py
+```
+
+Open `http://localhost:5000` in your browser.
+
+```bash
+# Live mode (requires AWS creds)
+DASHBOARD_MODE=live python app.py
 ```
 
 ### Demo Mode (No AWS Credentials Required)
@@ -105,7 +128,7 @@ python advanced_optimizer.py --report
 ### Advanced Flags
 
 ```bash
-# Add AI-powered forecast (requires Claude API key)
+# Add AI-powered forecast (requires configured LLM provider)
 python advanced_optimizer.py --report --ai-forecast
 
 # Generate auto-remediation plan (dry-run) + Terraform stubs
@@ -121,15 +144,17 @@ python advanced_optimizer.py --auto-remediate --generate-terraform
 └────────┬────────┘
          │
          ▼
-┌─────────────────┐      ┌──────────────┐
-│  Python Script  │─────▶│  Claude AI   │
-│  (cost_optimizer)│      │   Analysis   │
-└────────┬────────┘      └──────────────┘
+┌─────────────────┐      ┌──────────────────┐
+│  Python Engine  │─────▶│  LLM Provider    │
+│  (optimizers)   │      │ (OpenAI/Claude)  │
+└────────┬────────┘      └──────────────────┘
+         │
+         ├─────────────▶ Slack Webhook (optional)
          │
          ▼
 ┌─────────────────┐
-│ Slack Webhook   │
-│  (Your Channel) │
+│  Flask Web UI   │
+│  (Dashboard)    │
 └─────────────────┘
 ```
 
@@ -137,16 +162,30 @@ python advanced_optimizer.py --auto-remediate --generate-terraform
 
 ```
 ai-cost-optimization-dashboard/
-├── cost_optimizer.py      # Main script
-├── requirements.txt       # Python dependencies
-├── .env.example          # Environment variables template
-├── .gitignore            # Git ignore rules
-├── README.md             # This file
-└── tests/
-    └── test_optimizer.py # Unit tests
+├── app.py                     # Flask web dashboard
+├── dashboard_data.py          # Dashboard JSON payload builder
+├── cost_optimizer.py          # Core optimizer (CLI)
+├── advanced_optimizer.py      # Multi-feature demo runner
+├── anomaly_detector.py        # Spend anomaly detection
+├── cost_forecaster.py         # Cost forecasting
+├── auto_remediator.py         # Terraform auto-remediation stubs
+├── savings_tracker.py         # ROI tracking
+├── llm_client.py              # Cloud-agnostic LLM client
+├── requirements.txt           # Python dependencies
+├── .env.example               # Environment variables template
+├── static/                    # UI assets
+├── templates/                 # UI templates
+└── reports/                   # Generated reports
 ```
 
 ## 🔧 Technical Details
+
+### Cloud-Agnostic LLM Providers
+
+This project supports multiple LLM providers via `LLM_PROVIDER`:
+- `openai` (default) using the OpenAI Responses API
+- `anthropic` using Claude Messages API
+- `mock` for demos without API calls
 
 ### AWS Permissions Required
 
@@ -166,13 +205,9 @@ ai-cost-optimization-dashboard/
 }
 ```
 
-### Claude AI Integration
+### LLM Integration
 
-Uses Anthropic's Claude 3.5 Sonnet model via API:
-- Analyzes spending patterns
-- Identifies anomalies vs. historical baseline
-- Generates actionable recommendations
-- Prioritizes by cost impact
+By default, uses OpenAI Responses API. Anthropic is supported via `LLM_PROVIDER=anthropic`.
 
 ### Key Features
 
@@ -181,9 +216,12 @@ Uses Anthropic's Claude 3.5 Sonnet model via API:
 ✅ **Slack Integration** - Delivered where you work  
 ✅ **Cost Tracking** - Historical trend analysis  
 ✅ **Multi-Account Support** - Analyze consolidated billing  
+✅ **Anomaly Detection** - Z-score + IQR for spend spikes  
 ✅ **ROI Prioritization** - Recommendations ranked by savings/effort  
 ✅ **Risk Assessment** - Production-safe optimization suggestions  
 ✅ **Visual Analytics** - ASCII bar charts for quick pattern recognition  
+✅ **Web Dashboard** - Flask + Chart.js  
+✅ **PDF Export** - Print-ready reports from the dashboard  
 ✅ **DRY_RUN Mode** - Test without API charges  
 ✅ **Error Handling** - Graceful degradation for edge cases  
 
@@ -194,9 +232,9 @@ Uses Anthropic's Claude 3.5 Sonnet model via API:
 - [x] **Week 1**: Historical trending + anomaly detection
 - [x] **Week 1**: Visual cost distribution charts
 - [x] **Week 1**: ROI-based recommendation ranking
-- [ ] **Week 2**: Multi-account support + savings tracker
-- [ ] **Week 3**: Web dashboard UI (React + Flask)
-- [ ] **Week 4**: Terraform deployment module
+- [x] **Week 2**: Multi-account support + savings tracker
+- [x] **Week 3**: Web dashboard UI (Flask + Chart.js)
+- [x] **Week 4**: Terraform auto-remediation stubs
 
 ## 🤝 Contributing
 
@@ -221,4 +259,4 @@ DevOps Engineer | AWS + AI Automation Specialist
 
 As a DevOps engineer, I've seen teams waste thousands on idle resources. This tool combines my AWS expertise with AI to solve a real business problem: **making cost optimization automatic and actionable**.
 
-**Built with**: Python 🐍 | AWS Cost Explorer ☁️ | Claude AI 🤖 | Slack 💬
+**Built with**: Python 🐍 | AWS Cost Explorer ☁️ | OpenAI / Claude 🤖 | Flask | Chart.js | Slack 💬

@@ -22,9 +22,9 @@ import json
 
 # Third-party imports (installed via pip)
 import boto3  # AWS SDK for Python
-from anthropic import Anthropic  # Claude AI API
 from dotenv import load_dotenv  # Load environment variables from .env file
 import requests  # For sending HTTP requests to Slack
+from llm_client import LLMClient
 
 # ============================================================================
 # CONFIGURATION - Load settings from .env file
@@ -37,6 +37,7 @@ load_dotenv()
 # Get configuration from environment variables
 AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
 CLAUDE_API_KEY = os.getenv('CLAUDE_API_KEY')
+LLM_PROVIDER = os.getenv('LLM_PROVIDER', 'openai')
 SLACK_WEBHOOK_URL = os.getenv('SLACK_WEBHOOK_URL')
 DAYS_TO_ANALYZE = int(os.getenv('DAYS_TO_ANALYZE', '7'))
 DRY_RUN = os.getenv('DRY_RUN', 'false').lower() == 'true'
@@ -254,10 +255,6 @@ def analyze_costs_with_ai(cost_data):
     
     print("🤖 Analyzing costs with Claude AI...")
     
-    # Step 1: Check if we have an API key
-    if not CLAUDE_API_KEY:
-        return "⚠️ Claude API key not found. Please add it to your .env file."
-    
     # DRY RUN MODE - Skip API call for testing
     if DRY_RUN:
         print("   ⚠️  DRY RUN MODE - Using mock AI response (no API charges)")
@@ -296,8 +293,10 @@ def analyze_costs_with_ai(cost_data):
 **Note**: This is a DRY RUN mock response. Set DRY_RUN=false in .env for real AI analysis.
 """
     
-    # Step 2: Create Anthropic client
-    client = Anthropic(api_key=CLAUDE_API_KEY)
+    # Step 2: Create provider-agnostic LLM client
+    client = LLMClient(provider=LLM_PROVIDER)
+    if not client.is_configured():
+        return "⚠️ LLM provider not configured. Set LLM_PROVIDER and API key."
     
     # Step 3: Format cost data into a readable text for Claude
     cost_summary = f"""
@@ -316,9 +315,7 @@ Costs by Service:
     
     # Step 4: Create the prompt for Claude
     # This tells Claude what we want it to do
-    prompt = f"""You are a FinOps expert analyzing AWS spending for a production environment.
-
-ANALYSIS REQUIREMENTS:
+    prompt = f"""ANALYSIS REQUIREMENTS:
 Provide insights in this exact format:
 
 ## 📊 SPENDING OVERVIEW
@@ -353,28 +350,19 @@ DATA TO ANALYZE:
 Provide 3-5 recommendations ranked by ROI (savings / effort)."""
 
     try:
-        # Step 5: Call Claude API
-        message = client.messages.create(
-            model="claude-sonnet-4-20250514",  # Using Claude Sonnet 4
-            max_tokens=1000,  # Limit response length
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
+        # Step 5: Call LLM API
+        analysis = client.generate_text(
+            prompt=prompt,
+            system="You are a FinOps expert analyzing AWS spending for a production environment.",
+            max_tokens=1000,
         )
-        
-        # Step 6: Extract the response text
-        # Claude's response is in message.content[0].text
-        analysis = message.content[0].text
         
         print("   ✅ AI analysis complete")
         
         return analysis
         
     except Exception as e:
-        print(f"   ❌ Error calling Claude API: {str(e)}")
+        print(f"   ❌ Error calling LLM API: {str(e)}")
         return f"Error generating AI analysis: {str(e)}"
 
 

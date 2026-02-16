@@ -11,7 +11,7 @@ Author: Nicholas Awuni
 import os
 from typing import Dict, List, Optional
 from datetime import datetime
-from anthropic import Anthropic
+from llm_client import LLMClient
 
 class AutoRemediator:
     """
@@ -19,15 +19,15 @@ class AutoRemediator:
     Uses AI to create production-ready infrastructure-as-code.
     """
     
-    def __init__(self, claude_api_key: str, dry_run: bool = True):
+    def __init__(self, provider: str = None, dry_run: bool = True):
         """
         Initialize auto-remediation engine.
         
         Args:
-            claude_api_key: Anthropic API key
+            provider: LLM provider (openai/anthropic/mock)
             dry_run: If True, only show what would change (don't apply)
         """
-        self.client = Anthropic(api_key=claude_api_key) if claude_api_key else None
+        self.llm = LLMClient(provider=provider)
         self.dry_run = dry_run
     
     def generate_terraform_for_optimization(self, 
@@ -43,8 +43,8 @@ class AutoRemediator:
         Returns:
             Generated Terraform code
         """
-        if not self.client:
-            return "# Error: Claude API key not configured"
+        if not self.llm.is_configured():
+            return "# Error: LLM provider not configured"
         
         # Build prompt based on optimization type
         prompt = self._build_terraform_prompt(optimization_type, details)
@@ -52,18 +52,11 @@ class AutoRemediator:
         try:
             print(f"🤖 Generating Terraform code for: {optimization_type}...")
             
-            message = self.client.messages.create(
-                model="claude-sonnet-4-20250514",
+            terraform_code = self.llm.generate_text(
+                prompt=prompt,
+                system="You are a Terraform expert.",
                 max_tokens=2000,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ]
             )
-            
-            terraform_code = message.content[0].text
             
             # Clean up - remove markdown code fences if present
             if terraform_code.startswith('```terraform'):
@@ -355,8 +348,7 @@ if __name__ == "__main__":
     load_dotenv()
     
     # Initialize remediator
-    claude_key = os.getenv('CLAUDE_API_KEY')
-    remediator = AutoRemediator(claude_key, dry_run=True)
+    remediator = AutoRemediator(dry_run=True)
     
     # Example: Generate Terraform for EC2 resize
     optimization = {
