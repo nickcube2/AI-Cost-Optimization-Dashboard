@@ -91,6 +91,10 @@ CLAUDE_MODEL=claude-sonnet-4-20250514
 SLACK_WEBHOOK_URL=https://hooks.slack.com/your-webhook
 MONTHLY_BUDGET=1000
 DASHBOARD_MODE=demo
+DASHBOARD_API_TOKEN=
+DASHBOARD_HOST=127.0.0.1
+DASHBOARD_CACHE_TTL=60
+SSE_INTERVAL=30
 ```
 
 ### Run It
@@ -122,7 +126,14 @@ DASHBOARD_MODE=live python app.py
 ```bash
 # Require an API token for /api/* and SSE
 DASHBOARD_API_TOKEN=your-token-here python app.py
+```
 
+When token auth is enabled, open the UI with:
+```
+http://localhost:5000?token=your-token-here
+```
+
+```bash
 # Cache dashboard data for 60s to avoid repeated AWS calls
 DASHBOARD_CACHE_TTL=60 python app.py
 ```
