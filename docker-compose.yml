@@ -1,0 +1,14 @@
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-cost-dashboard
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      DASHBOARD_HOST: 0.0.0.0
+      PORT: 5000
+    command: ["python", "app.py"]

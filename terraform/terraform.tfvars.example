@@ -1,0 +1,12 @@
+region            = "us-east-1"
+vpc_id            = "vpc-xxxxxxxxxxxxxxxxx"
+public_subnet_ids = ["subnet-xxxxxxxxxxxxxxxxx", "subnet-yyyyyyyyyyyyyyyyy"]
+
+app_name            = "ai-cost-dashboard"
+dashboard_mode      = "live"
+llm_provider        = "openai"
+openai_model        = "gpt-4.1-mini"
+dashboard_api_token = "replace-with-strong-token"
+
+# Optional: point directly to a prebuilt image URI.
+# container_image = "123456789012.dkr.ecr.us-east-1.amazonaws.com/ai-cost-dashboard-repo:latest"

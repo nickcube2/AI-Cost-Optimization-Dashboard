@@ -147,6 +147,73 @@ The dashboard can stream updates using Server-Sent Events.
 SSE_INTERVAL=30 python app.py
 ```
 
+### Containerization (Docker)
+
+```bash
+# Build image
+docker build -t ai-cost-optimization-dashboard .
+
+# Run dashboard container
+docker run --rm -p 5000:5000 --env-file .env \
+  -e DASHBOARD_HOST=0.0.0.0 \
+  ai-cost-optimization-dashboard
+```
+
+```bash
+# Run CLI workflow inside container
+docker run --rm --env-file .env ai-cost-optimization-dashboard python advanced_optimizer.py --demo
+```
+
+### Containerization (Docker Compose)
+
+```bash
+# Start dashboard
+docker compose up --build
+
+# Stop dashboard
+docker compose down
+```
+
+### Local Testing Deployment (Recommended)
+
+```bash
+cp .env.example .env
+make local-up
+```
+
+Open:
+`http://localhost:5000`
+
+If `DASHBOARD_API_TOKEN` is set:
+`http://localhost:5000?token=<your-token>`
+
+Useful local commands:
+```bash
+make local-logs
+make local-down
+```
+
+### Terraform Deployment (AWS)
+
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars
+terraform init
+terraform plan
+terraform apply
+```
+
+Deployment docs are in:
+`/Users/kwame/Desktop/PERSONAL_PROJECTS/Automation/AI-Cost-Optimization-Dashboard/terraform/README.md`
+
+Useful AWS Terraform commands:
+```bash
+make tf-init
+make tf-plan
+make tf-apply
+make tf-destroy
+```
+
 ### Bank-Friendly AWS Integration (Governed & Auditable)
 
 For regulated environments, prefer a **batch + governance** approach:
