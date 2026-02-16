@@ -117,6 +117,16 @@ Open `http://localhost:5000` in your browser.
 DASHBOARD_MODE=live python app.py
 ```
 
+### Security & Caching (Recommended)
+
+```bash
+# Require an API token for /api/* and SSE
+DASHBOARD_API_TOKEN=your-token-here python app.py
+
+# Cache dashboard data for 60s to avoid repeated AWS calls
+DASHBOARD_CACHE_TTL=60 python app.py
+```
+
 ### Real-Time Updates (SSE)
 
 The dashboard can stream updates using Server-Sent Events.

@@ -90,5 +90,8 @@
     </div>
 
     <script src="/static/app.js"></script>
+    <script>
+      window.DASHBOARD_TOKEN = "{{ request.args.get('token', '') }}";
+    </script>
   </body>
 </html>

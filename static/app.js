@@ -185,15 +185,18 @@ document.getElementById("export-btn").addEventListener("click", () => {
   window.print();
 });
 
+const token = window.DASHBOARD_TOKEN || "";
+
 const loadDashboard = async () => {
-  const response = await fetch("/api/summary");
+  const response = await fetch(`/api/summary${token ? `?token=${token}` : ""}`);
   const data = await response.json();
   updateDashboard(data);
 };
 
 const startSSE = () => {
   if (!liveEnabled) return;
-  sseSource = new EventSource("/api/stream");
+  const url = `/api/stream${token ? `?token=${token}` : ""}`;
+  sseSource = new EventSource(url);
   sseSource.addEventListener("summary", (event) => {
     const payload = JSON.parse(event.data);
     updateDashboard(payload);
