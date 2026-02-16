@@ -186,10 +186,22 @@ document.getElementById("export-btn").addEventListener("click", () => {
 });
 
 const token = window.DASHBOARD_TOKEN || "";
+const tokenRequired = window.TOKEN_REQUIRED || false;
+const banner = document.getElementById("auth-banner");
+
+if (tokenRequired && !token) {
+  banner.classList.remove("hidden");
+}
 
 const loadDashboard = async () => {
   const response = await fetch(`/api/summary${token ? `?token=${token}` : ""}`);
+  if (!response.ok) {
+    banner.textContent = "Auth required or token invalid. Append ?token=YOUR_TOKEN to the URL.";
+    banner.classList.remove("hidden");
+    return;
+  }
   const data = await response.json();
+  banner.classList.add("hidden");
   updateDashboard(data);
 };
 
@@ -202,6 +214,8 @@ const startSSE = () => {
     updateDashboard(payload);
   });
   sseSource.onerror = () => {
+    banner.textContent = "Live updates paused (auth required or connection lost).";
+    if (tokenRequired && !token) banner.classList.remove("hidden");
     if (sseSource) sseSource.close();
     if (liveEnabled) setTimeout(startSSE, 5000);
   };

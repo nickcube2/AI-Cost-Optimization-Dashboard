@@ -59,7 +59,7 @@ def get_cached_payload(mode, days, budget, accounts):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", token_required=bool(API_TOKEN))
 
 
 @app.route("/api/summary")

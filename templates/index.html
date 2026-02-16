@@ -19,6 +19,9 @@
           <div class="actions">
             <button class="btn" id="export-btn">Export PDF</button>
           </div>
+          <div class="banner hidden" id="auth-banner">
+            Auth required. Append <code>?token=YOUR_TOKEN</code> to the URL.
+          </div>
         </div>
         <div class="hero-meta">
           <div class="pill" id="mode-pill">Mode: Demo</div>
@@ -92,6 +95,7 @@
     <script src="/static/app.js"></script>
     <script>
       window.DASHBOARD_TOKEN = "{{ request.args.get('token', '') }}";
+      window.TOKEN_REQUIRED = {{ 'true' if token_required else 'false' }};
     </script>
   </body>
 </html>
