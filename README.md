@@ -10,9 +10,9 @@
 
 ## 🎯 Business Impact
 
-- **Cost Savings**: Identified $15,400/month in optimization opportunities
-- **Time Saved**: 4 hours/week of manual cost analysis eliminated
-- **Proactive Alerts**: Catches spending anomalies before they become problems
+- **Potential Savings**: Identifies optimization opportunities and estimates monthly savings
+- **Operational Efficiency**: Automates recurring cost analysis and reporting workflows
+- **Proactive Alerts**: Detects spend anomalies and budget risk before costs escalate
 
 ## 📊 What It Does
 
