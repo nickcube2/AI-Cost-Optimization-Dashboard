@@ -46,6 +46,10 @@ This tool automatically:
 - S3: $890 (11%)
 ```
 
+### Dashboard Preview
+
+![Dashboard Screenshot](screenshots/Dashboard_snapshot.png)
+
 ## 🚀 Quick Start
 
 ### Prerequisites
