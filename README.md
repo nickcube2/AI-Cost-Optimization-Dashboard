@@ -184,7 +184,6 @@ python advanced_optimizer.py --report
 
 ---
 
-<<<<<<< HEAD
 ## 📋 Sample Output
 
 ```
@@ -218,35 +217,6 @@ Total: $12,858 | Trend: +8.4% | Budget: On Track
 4. NAT Gateway consolidation             → Save $380/mo    [Medium]
 
 ROI Total: $7,330/month → $87,960/year
-=======
-```bash
-# Add AI-powered forecast (requires configured LLM provider)
-python advanced_optimizer.py --report --ai-forecast
-
-# Generate auto-remediation plan (dry-run) + Terraform stubs
-python advanced_optimizer.py --auto-remediate --generate-terraform
-```
-
-
-## 🏗️ Architecture
-
-```
-┌─────────────────┐     ┌──────────────────────┐     ┌──────────────────┐
-│   AWS Account   │────▶│   Python Engine      │────▶│   LLM Provider   │
-│  Cost Explorer  │     │  - Cost fetching     │     │  Claude / OpenAI │
-│  (CUR / API)    │     │  - Anomaly detection │     └──────────────────┘
-└─────────────────┘     │  - Forecasting       │              │
-                        │  - ROI ranking       │              ▼
-                        └──────────┬───────────┘     ┌──────────────────┐
-                                   │                  │  Recommendations │
-                          ┌────────┴────────┐         │  + Action Items  │
-                          │                 │         └──────────────────┘
-                    ┌─────▼──────┐  ┌───────▼──────┐
-                    │ Flask Web  │  │ Slack Webhook│
-                    │ Dashboard  │  │  (Weekly)    │
-                    │ Chart.js   │  └──────────────┘
-                    └────────────┘
->>>>>>> 445cadc (update Readme)
 ```
 
 ---
